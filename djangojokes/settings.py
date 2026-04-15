@@ -138,5 +138,5 @@ STATICFILES_DIRS = [
 
 if os.environ.get('ENVIRONMENT') != 'production':
     from .local_settings import *
-    
-# no code below this line
+
+# don't put code below this line
