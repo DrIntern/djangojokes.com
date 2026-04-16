@@ -43,9 +43,11 @@ INSTALLED_APPS = [
 
     # local 
     'common.apps.CommonConfig',
+    'jobs.apps.JobsConfig',
     'jokes.apps.JokesConfig',
     'pages.apps.PagesConfig',
     'users.apps.UsersConfig',
+    
 ]
 
 MIDDLEWARE = [
