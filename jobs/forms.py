@@ -1,23 +1,16 @@
 from django import forms
 from datetime import datetime
-from django.core.validators import URLValidator
+
 from django.core.exceptions import ValidationError
+from .models import Applicant
 
-def validate_future_date(value):
-    if value < datetime.now().date():
-        raise ValidationError(
-            message=f'{value} is in the past.', code='past_date'
-        )
+def validate_checked(value):
+    if not value:
+        raise ValidationError("Required.")
 
-class JobApplicationForm(forms.Form):
+class JobApplicationForm(forms.ModelForm):
 
-    employment = (
-        (None, '---------'),
-        ('full Time','Full Time'),
-        ('part time','Part Time'),
-    )
-
-    week = (
+    DAYS = (
         ( 1, 'Monday'),
         ( 2, 'Tuesday'),
         ( 3, 'Wednesday'),
@@ -25,56 +18,44 @@ class JobApplicationForm(forms.Form):
         ( 5, 'Friday'),
     )
 
-    years = range(datetime.now().year, datetime.now().year+2)
-
-    first_name = forms.CharField(
-        widget = forms.TextInput(attrs= {'autofocus': True})
-    )
-    last_name = forms.CharField()
-
-    email = forms.EmailField()
-
-    website = forms.CharField(
-        required= False,
-        validators=[URLValidator(schemes=['http', 'https'])],
-        widget= forms.TextInput(attrs= {
-            'placeholder' : 'https://fakewebsite.com'
-        })
-    )
     
-    employment_type = forms.ChoiceField(choices=employment)
-
-    start_date = forms.DateField(help_text='The earliest date you can start working.', 
-        widget = forms.SelectDateWidget(
-            years= years,
-            attrs= {'style': 'width: 31%; display: inline-block; margin: 0 1%'}
-        ),
-        validators=[validate_future_date],
-        error_messages = {'past_date': 'Please enter a future date.'}
-    )
-    availability = forms.TypedMultipleChoiceField(
-        choices=week,
+    available_days = forms.TypedMultipleChoiceField(
+        choices= DAYS,
         coerce=int,
         help_text='Check all days that you can work.',
         widget=forms.CheckboxSelectMultiple(
             attrs={'checked':True}
         )
     )
-    desired_hourly_rate = forms.DecimalField(
-        widget= forms.NumberInput(
-            attrs= {
-                'min' : '10.00',
-                'max' : '100.00',
-                'step' : '.25',
-            }
+    confirmation = forms.BooleanField(
+        label='I certify that the information I have provided is true.',
+        validators= [validate_checked]
         )
-    )
-    cover_letter = forms.CharField(required= False,
-        widget= forms.Textarea(
-            attrs= {
-                'cols' : '75',
-                'rows' : '5',
+
+    class Meta:
+        model = Applicant
+        fields = (
+            'first_name', 'last_name', 'email', 'website', 'employment_type',
+            'start_date', 'available_days', 'desired_hourly_wage',
+            'cover_letter', 'confirmation', 'job')
+        widgets = {
+            'first_name': forms.TextInput(attrs={'autofocus': True}),
+            'website': forms.TextInput(
+                attrs = {'placeholder':'https://www.example.com'}
+            ),
+            'start_date': forms.SelectDateWidget(
+                attrs = {
+                    'style': 'width: 21%; display: inline-block; margin: 0 1%'
+                },
+                years = range(datetime.now().year, datetime.now().year+2)
+            ),
+            'desired_hourly_wage': forms.NumberInput(
+                attrs = {'min':'10.00', 'max':'100.00', 'step':'.25'}
+            ),
+            'cover_letter': forms.Textarea(attrs={'cols': '100', 'rows': '5'})
+        }
+        error_messages = {
+            'start_date': {
+                'past_date': 'Please enter a future date.'
             }
-        ) 
-    )
-    confirmation = forms.BooleanField(label='I certify that the information I have provided is true.')
+        }
