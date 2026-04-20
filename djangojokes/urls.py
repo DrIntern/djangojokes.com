@@ -24,6 +24,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
 
     #user mgmt
+    path('account/', include('users.urls')),
     path('account/', include('allauth.urls')),
     
     #local apps
