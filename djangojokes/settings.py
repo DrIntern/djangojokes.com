@@ -39,11 +39,15 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
+    'django.contrib.sites',
     'django.contrib.staticfiles',
 
     # 3rd party apps
     'crispy_forms',
     'crispy_bootstrap5',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
 
     # local 
     'common.apps.CommonConfig',
@@ -54,11 +58,14 @@ INSTALLED_APPS = [
     
 ]
 
+SITE_ID = 1
+
 CRISPY_ALLOWED_TEMPLATE_PACKS = 'bootstrap5'
 
 CRISPY_TEMPLATE_PACK = 'bootstrap5'
 
 MIDDLEWARE = [
+    'allauth.account.middleware.AccountMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -102,9 +109,25 @@ DATABASES = {
     }
 }
 
+# EMAIL
+SENDGRID_API_KEY = os.environ.get('SENDGRID_API_KEY')
+EMAIL_HOST = 'smtp.sendgrid.net'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'apikey'
+EMAIL_HOST_PASSWORD = SENDGRID_API_KEY
+DEFAULT_FROM_EMAIL = 'jcox0893@gmail.com'
 
 # Password validation
 # https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
+
+AUTHENTICATION_BACKENDS = (
+    # Needed to login by username in Django admin, even w/o `allauth`
+    'django.contrib.auth.backends.ModelBackend',
+
+    # `allauth`-specific auth methods, such as login by e-mail
+    'allauth.account.auth_backends.AuthenticationBackend',
+)
 
 AUTH_PASSWORD_VALIDATORS = [
         {
@@ -123,7 +146,18 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # AUTHENTICATION SETTINGS
 AUTH_USER_MODEL = 'users.CustomUser'
+LOGIN_URL = 'account_login'
+LOGIN_REDIRECT_URL = 'pages:homepage'
 
+## django-allauth settings
+ACCOUNT_AUTHENTICATION_METHOD = 'email' # Default: 'username'
+ACCOUNT_EMAIL_CONFIRMATION_EXPIRE_DAYS = 1 # Default: 3
+ACCOUNT_EMAIL_REQUIRED = True # Default: False
+ACCOUNT_EMAIL_VERIFICATION = 'mandatory' # Default: 'optional'
+ACCOUNT_LOGIN_ATTEMPTS_LIMIT = 5 # Default: 5
+ACCOUNT_LOGIN_ATTEMPTS_TIMEOUT = 300 # Default 300
+ACCOUNT_LOGOUT_REDIRECT_URL = 'account_login' # Default: '/'
+ACCOUNT_USERNAME_REQUIRED = False # Default: True
 
 # Internationalization
 # https://docs.djangoproject.com/en/6.0/topics/i18n/
