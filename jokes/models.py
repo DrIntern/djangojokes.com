@@ -29,6 +29,26 @@ class Joke(models.Model):
     def __str__(self):
         return self.question
     
+class JokeVote(models.Model):
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE,
+        related_name='jokevotes'
+    )
+    joke = models.ForeignKey(
+        Joke, on_delete=models.CASCADE,
+        related_name='jokevotes'
+    )
+    vote = models.SmallIntegerField()
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['user', 'joke'], name='one_vote_per_user_per_joke'
+            )
+        ]
+
 class Category(models.Model):
     category = models.CharField(max_length=50)
     slug = models.SlugField(
