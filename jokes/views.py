@@ -3,11 +3,13 @@ from django.views.generic import CreateView, DeleteView, DetailView, ListView, U
 from .forms import JokeForm
 from .models import Joke
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.contrib.messages.views import SuccessMessageMixin
 
 # Create your views here.
-class JokeCreateView(LoginRequiredMixin, CreateView):
+class JokeCreateView(SuccessMessageMixin, LoginRequiredMixin, CreateView):
     model = Joke
     form_class = JokeForm
+    success_message = 'Joke made!'
 
     def form_valid(self, form):
         form.instance.user = self.request.user
@@ -27,9 +29,10 @@ class JokeDetailView(DetailView):
 class JokeListView(ListView):
     model = Joke
 
-class JokeUpdateView(UserPassesTestMixin, UpdateView):
+class JokeUpdateView(SuccessMessageMixin, UserPassesTestMixin, UpdateView):
     model = Joke
     form_class = JokeForm
+    success_message = 'Joke Fixed!'
 
     def test_func(self):
         obj = self.get_object()
