@@ -15,6 +15,18 @@ class Joke(models.Model):
     slug = models.SlugField(
         max_length=50, unique=True, null=False, editable=False
         )
+    
+    @property
+    def num_votes(self):
+        return self.jokevotes.count()
+
+    @property
+    def num_likes(self):
+        return self.jokevotes.filter(vote=1).count()
+
+    @property
+    def num_dislikes(self):
+        return self.jokevotes.filter(vote=-1).count()
 
     def get_absolute_url(self):
         return reverse('jokes:detail', args=[self.slug])
