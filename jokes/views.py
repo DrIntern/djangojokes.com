@@ -6,6 +6,7 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.http import JsonResponse
+from django.db.models import Q
 import json
 
 # Create your views here.
@@ -82,6 +83,10 @@ class JokeListView(ListView):
         ordering = self.get_ordering()
         qs = Joke.objects.all()
 
+        if 'q' in self.request.GET: # Filter by search query
+            q = self.request.GET.get('q') 
+            qs = qs.filter(
+            Q(question__icontains=q) | Q(answer__icontains=q))
         if 'slug' in self.kwargs: # Filter by category or tag
             slug = self.kwargs['slug']
         if '/category' in self.request.path_info:

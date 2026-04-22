@@ -51,8 +51,8 @@
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
               <a class="dropdown-item" href="{% url 'my-account' %}">My Account</a>
-              <a class="dropdown-item" href="{% url 'jokes:creator' user.username %}?order={{ order }}
-              &direction={{ direction }}">My Django Jokes</a>
+              <a class="dropdown-item" href="{% url 'jokes:creator' user.username %}?order={{ order }}&direction={{ direction }}">
+                My Django Jokes</a>
               <div class="dropdown-divider"></div>
               <form method="post" action="{% url 'account_logout' %}">
                 {% csrf_token %}
@@ -63,13 +63,14 @@
           </li>
         {% endif %}
       </ul>
-      <form class="row my-2 my-lg-0 row">
-        <input class="form-control me-sm-2 col" type="search"
-        placeholder="Search" aria-label="Search">
-        <button class="btn btn-outline-success my-2 my-sm-0 me-4 col" type="submit">
-          Search
+    <form class="my-2 my-lg-0" action="{% url 'jokes:list' %}">
+      <input class="form-control me-sm-2" type="search"
+        placeholder="Search" aria-label="Search" name="q"
+        value="{{ request.GET.q }}">
+        <button class="btn btn-outline-success my-2 my-sm-0" type="submit">
+        Search
         </button>
-      </form>
+    </form>
     </div>
   </nav>
 </header>
