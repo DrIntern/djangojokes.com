@@ -28,6 +28,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+INTERNAL_IPS = ['127.0.0.1',] # Necessary for the Debug Toolbar
+
 
 # Application definition
 
@@ -49,6 +51,7 @@ INSTALLED_APPS = [
     'allauth.account',
     'allauth.socialaccount',
     'private_storage',
+    'debug_toolbar',
 
     # local 
     'common.apps.CommonConfig',
@@ -66,6 +69,7 @@ CRISPY_ALLOWED_TEMPLATE_PACKS = 'bootstrap5'
 CRISPY_TEMPLATE_PACK = 'bootstrap5'
 
 MIDDLEWARE = [
+    'debug_toolbar.middleware.DebugToolbarMiddleware', # The Debug Toolbar
     'allauth.account.middleware.AccountMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',

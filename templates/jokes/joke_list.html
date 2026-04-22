@@ -101,12 +101,14 @@
               {% endif %}
             </td>
             <td>
+          {% with votes=joke.votes %}
           <div id="rating-container" title="{{ joke.rating }}">
             <div id="rating" 
-              style="width:{% widthratio joke.rating 10 100 %}%;">
+              style="width:{% widthratio votes.rating 10 100 %}%;">
             </div>
           </div>
-            ({{ joke.num_votes }} vote{{ joke.num_votes|pluralize }})
+            ({{ votes.num_votes }} vote{{ votes.num_votes|pluralize }})
+              {% endwith %}
             </td>
           </tr>
         {% endfor %}
